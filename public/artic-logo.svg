@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- A.R.T.I.C SkyPilot icon — stylised drone silhouette -->
+  <rect width="64" height="64" rx="12" fill="#0a1628"/>
+  <!-- central body -->
+  <rect x="26" y="26" width="12" height="12" rx="3" fill="#22d3ee"/>
+  <!-- arms -->
+  <rect x="8" y="30" width="18" height="4" rx="2" fill="#22d3ee" opacity="0.8"/>
+  <rect x="38" y="30" width="18" height="4" rx="2" fill="#22d3ee" opacity="0.8"/>
+  <rect x="30" y="8" width="4" height="18" rx="2" fill="#22d3ee" opacity="0.8"/>
+  <rect x="30" y="38" width="4" height="18" rx="2" fill="#22d3ee" opacity="0.8"/>
+  <!-- propellers -->
+  <circle cx="10" cy="10" r="6" fill="none" stroke="#22d3ee" stroke-width="2"/>
+  <circle cx="54" cy="10" r="6" fill="none" stroke="#22d3ee" stroke-width="2"/>
+  <circle cx="10" cy="54" r="6" fill="none" stroke="#22d3ee" stroke-width="2"/>
+  <circle cx="54" cy="54" r="6" fill="none" stroke="#22d3ee" stroke-width="2"/>
+</svg>

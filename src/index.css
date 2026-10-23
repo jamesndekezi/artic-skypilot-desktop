@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base resets ─────────────────────────────────────────────────── */
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  body {
+    @apply bg-artic-bg text-artic-text font-sans antialiased;
+    font-size: 14px;
+  }
+
+  /* Scrollbar styling — dark nav feel */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-navy-900;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-navy-600 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-artic-accent-dim;
+  }
+
+  /* Selection colour */
+  ::selection {
+    @apply bg-cyan-600 text-white;
+  }
+}
+
+/* ── Component utilities ─────────────────────────────────────────── */
+@layer components {
+  /* Card surface */
+  .card {
+    @apply bg-artic-surface border border-artic-border rounded-xl p-4;
+  }
+
+  /* Monospace data readout */
+  .mono {
+    @apply font-mono tracking-wide;
+  }
+
+  /* Accent glow effect for live indicators */
+  .glow-cyan {
+    box-shadow: 0 0 8px theme("colors.cyan.400"), 0 0 20px theme("colors.cyan.600" / 40%);
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  /* Status dot */
+  .status-dot {
+    @apply inline-block w-2 h-2 rounded-full;
+  }
+}
