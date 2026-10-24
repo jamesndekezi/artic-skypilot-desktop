@@ -5,7 +5,7 @@
  * All motor commands and flight inputs are simulation-only.
  * Physical hardware control is not implemented at this stage.
  */
-import { useReducer, useEffect, useState } from 'react'
+import { useReducer, useEffect, useRef, useState } from 'react'
 import type {
   ManualControlState,
   MotorId,
@@ -94,22 +94,28 @@ export default function ManualControlPage() {
   // Live keyboard state from the hook — NOT stored in reducer state
   const { pressedKeys, precisionMode } = useKeyboardControl(state.keyboard.enabled)
 
+  // Stable refs so the keyboard tick interval never needs to restart for key events
+  const pressedKeysRef = useRef(pressedKeys)
+  const precisionModeRef = useRef(precisionMode)
+  useEffect(() => { pressedKeysRef.current = pressedKeys }, [pressedKeys])
+  useEffect(() => { precisionModeRef.current = precisionMode }, [precisionMode])
+
   // All-motors staging slider (local UI state)
   const [allMotorsPwm, setAllMotorsPwm] = useState(MIN_PWM)
 
-  // Keyboard tick at 100 ms
+  // Keyboard tick at 100 ms — only restarts when keyboard enabled state changes
   useEffect(() => {
     if (!state.keyboard.enabled) return
     const interval = setInterval(() => {
       dispatch({
         type: 'APPLY_KEYBOARD_INPUTS',
-        pressedKeys,
-        precisionMode,
+        pressedKeys: pressedKeysRef.current,
+        precisionMode: precisionModeRef.current,
         deltaMs: 100,
       })
     }, 100)
     return () => clearInterval(interval)
-  }, [state.keyboard.enabled, pressedKeys, precisionMode])
+  }, [state.keyboard.enabled])
 
   // Flight mode keys 1/2/3 — registered regardless of keyboard control toggle
   useEffect(() => {

@@ -5,7 +5,7 @@
  * slider, numeric input, and +/- increment controls.
  * Simulation-only — no ESC signal is sent.
  */
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { MotorId, MotorState } from '@/types/manual-control'
 import { MIN_PWM, MAX_PWM } from '@/types/manual-control'
 import clsx from 'clsx'
@@ -53,10 +53,9 @@ export default function MotorCard({ motor, onCommandChange }: Props) {
   }
 
   // Sync numeric input display with slider when motor.commandedPwmUs changes externally
-  const syncedValue = String(motor.commandedPwmUs)
-  if (!inputError && inputValue !== syncedValue) {
-    setInputValue(syncedValue)
-  }
+  useEffect(() => {
+    if (!inputError) setInputValue(String(motor.commandedPwmUs))
+  }, [motor.commandedPwmUs, inputError])
 
   const rangePercent =
     ((motor.commandedPwmUs - MIN_PWM) / (MAX_PWM - MIN_PWM)) * 100

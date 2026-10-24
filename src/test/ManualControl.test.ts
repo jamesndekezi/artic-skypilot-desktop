@@ -139,6 +139,20 @@ describe('stopAll', () => {
     const stopped = stopAll(createInitialState())
     expect(stopped.safety.lastAction).toBe('STOP ALL activated')
   })
+
+  it('stopAllActive clears after a subsequent setMotorPwm', () => {
+    const stopped = stopAll(setAllMotorsPwm(createInitialState(), 1100))
+    expect(stopped.safety.stopAllActive).toBe(true)
+    const resumed = setMotorPwm(stopped, 'M1', 1050)
+    expect(resumed.safety.stopAllActive).toBe(false)
+  })
+
+  it('stopAllActive clears after a subsequent setAllMotorsPwm', () => {
+    const stopped = stopAll(setAllMotorsPwm(createInitialState(), 1100))
+    expect(stopped.safety.stopAllActive).toBe(true)
+    const resumed = setAllMotorsPwm(stopped, 1050)
+    expect(resumed.safety.stopAllActive).toBe(false)
+  })
 })
 
 // ── setControlInput ───────────────────────────────────────────────────────────

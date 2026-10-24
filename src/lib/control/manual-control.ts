@@ -75,6 +75,7 @@ export function setMotorPwm(
     },
     safety: {
       ...state.safety,
+      stopAllActive: false,
       lastAction: `Motor ${id} set to ${pwmUs} µs`,
     },
   }
@@ -110,6 +111,7 @@ export function setAllMotorsPwm(
     motors: updatedMotors,
     safety: {
       ...state.safety,
+      stopAllActive: false,
       lastAction: `All motors set to ${pwmUs} µs`,
     },
   }

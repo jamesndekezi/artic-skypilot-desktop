@@ -91,6 +91,25 @@ describe('useKeyboardControl', () => {
     expect(result.current.pressedKeys.size).toBe(0)
   })
 
+  it('document visibilitychange with hidden=true clears all pressed keys', () => {
+    const { result } = renderHook(() => useKeyboardControl(true))
+
+    act(() => {
+      fireKeyDown('ArrowUp')
+      fireKeyDown('W')
+    })
+
+    act(() => {
+      Object.defineProperty(document, 'hidden', { value: true, writable: true, configurable: true })
+      document.dispatchEvent(new Event('visibilitychange'))
+    })
+
+    expect(result.current.pressedKeys.size).toBe(0)
+
+    // Restore document.hidden for subsequent tests
+    Object.defineProperty(document, 'hidden', { value: false, writable: true, configurable: true })
+  })
+
   it('ignores keydown when target is INPUT element', () => {
     const { result } = renderHook(() => useKeyboardControl(true))
 
