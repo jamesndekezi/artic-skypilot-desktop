@@ -6,6 +6,7 @@ import {
   FileText,
   Settings,
   Radio,
+  Gamepad2,
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -20,6 +21,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { label: "Overview", to: "/overview", icon: LayoutDashboard },
   { label: "Flight Simulator", to: "/simulator", icon: Plane },
+  { label: "Manual Control", to: "/manual-control", icon: Gamepad2 },
   {
     label: "Mission Planner",
     to: "/mission-planner",

@@ -5,6 +5,7 @@ import FlightSimulatorPage from "@/pages/FlightSimulatorPage";
 import MissionPlannerPage from "@/pages/MissionPlannerPage";
 import FlightLogsPage from "@/pages/FlightLogsPage";
 import SettingsPage from "@/pages/SettingsPage";
+import ManualControlPage from "@/pages/ManualControlPage";
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="mission-planner" element={<MissionPlannerPage />} />
         <Route path="flight-logs" element={<FlightLogsPage />} />
         <Route path="settings" element={<SettingsPage />} />
+        <Route path="manual-control" element={<ManualControlPage />} />
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/overview" replace />} />
       </Route>

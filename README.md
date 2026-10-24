@@ -85,6 +85,43 @@ Altitude is mapped directly to the Y axis (1 unit = 1 metre).
 
 ---
 
+## Stage 3: Manual Control
+
+Route: `/manual-control`
+
+### Motor control
+- 4 motor cards with individual PWM sliders (bench-testing profile: 1000–1150 µs)
+- All-motors slider for synchronized commands
+- STOP ALL resets all to 1000 µs
+- Simulation mode only — no hardware commands issued
+
+### Keyboard bindings
+| Key | Action |
+|-----|--------|
+| W / S | Pitch + / - |
+| A / D | Roll - / + |
+| Arrow Up / Down | Throttle + / - |
+| Arrow Left / Right | Yaw - / + |
+| Shift | Precision mode (0.4× rate) |
+| Space | Neutralise direction inputs |
+| Escape | All inputs to zero |
+| 1 / 2 / 3 | Flight mode: Stabilize / Altitude Hold / Position Hold |
+
+### Safety limitations (this stage)
+- Physical mode unavailable
+- No hardware connection
+- All commands are simulation-only
+- No serial, USB, BLE, or network transport implemented
+
+### Before ESP32 integration
+- Implement and verify transport layer (serial/BLE/Wi-Fi)
+- Confirm ESC PWM protocol compatibility (GPIO 13, 25, 26, 27)
+- Add hardware connection state management
+- Arm/disarm sequence with safety interlocks
+- Telemetry feedback from ESP32
+
+---
+
 ## Running tests
 
 ```bash
