@@ -202,7 +202,11 @@ export function applyKeyboardInputs(
   const effectiveThrottleRate = throttleRate * precisionMultiplier
   const effectiveDirRate = dirRate * precisionMultiplier
 
-  // Special keys: checked first, they override incremental motion
+  // Special keys: checked first, they override incremental motion.
+  // NOTE: 'Escape' is intentionally never added to pressedKeys by useKeyboardControl —
+  // the hook calls clearKeys() immediately on Escape before the key reaches this Set.
+  // This branch is therefore unreachable at runtime but is preserved for completeness
+  // should applyKeyboardInputs be called from a context that does include Escape.
   if (pressedKeys.has('Escape')) {
     return {
       ...state,

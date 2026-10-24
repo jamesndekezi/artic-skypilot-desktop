@@ -279,7 +279,11 @@ export default function ManualControlPage() {
             onToggle={(enabled) =>
               dispatch({ type: 'TOGGLE_KEYBOARD', enabled })
             }
-            onReset={() => dispatch({ type: 'RESET_INTERFACE' })}
+            onReset={() => {
+              dispatch({ type: 'RESET_INTERFACE' })
+              // Also reset local staging slider — not covered by the reducer
+              setAllMotorsStagingPwm(MIN_PWM)
+            }}
           />
         </div>
       </div>
