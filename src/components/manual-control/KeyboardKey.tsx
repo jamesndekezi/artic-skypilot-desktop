@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 
-export type KeyWidth = 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
+export type KeyWidth = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl'
 
 interface KeyboardKeyProps {
   label: string
@@ -12,13 +12,15 @@ interface KeyboardKeyProps {
   className?: string
 }
 
-// Min-width classes for each size variant
+// Pixel widths matching a realistic keyboard feel
 const WIDTH_CLASS: Record<KeyWidth, string> = {
-  sm:  'min-w-[28px]  w-[28px]',
-  md:  'min-w-[40px]  w-[40px]',
-  lg:  'min-w-[56px]  w-[56px]',
-  xl:  'min-w-[80px]  w-[80px]',
-  xxl: 'min-w-[120px] w-[120px]',
+  xs:   'w-8  min-w-[32px]',
+  sm:   'w-9  min-w-[36px]',
+  md:   'w-12 min-w-[48px]',
+  lg:   'w-14 min-w-[56px]',
+  xl:   'w-20 min-w-[80px]',
+  xxl:  'w-28 min-w-[112px]',
+  xxxl: 'w-48 min-w-[192px]',
 }
 
 export default function KeyboardKey({
@@ -34,14 +36,22 @@ export default function KeyboardKey({
       aria-label={`Key ${label}${active ? ' (pressed)' : ''}`}
       role="img"
       className={clsx(
-        // Base styles shared by all keys
-        'h-8 flex items-center justify-center',
-        'rounded-md border text-[11px] font-mono font-medium',
+        // Base — realistic key height and shape
+        'h-9 flex items-center justify-center',
+        'rounded border text-[11px] font-mono font-medium',
         'select-none transition-all duration-75',
         WIDTH_CLASS[width],
-        // State-driven styles
-        active ? 'key-active' : 'key-inactive',
-        dimmed && 'opacity-40',
+        // State
+        active
+          ? [
+              'bg-blue-600/80 border-blue-400 text-white',
+              'shadow-[0_0_10px_rgba(59,130,246,0.7),inset_0_1px_0_rgba(255,255,255,0.15)]',
+            ]
+          : [
+              'bg-[rgba(15,32,64,0.65)] border-[rgba(21,42,84,0.9)] text-slate-400',
+              'shadow-[inset_0_-2px_0_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.04)]',
+            ],
+        dimmed && 'opacity-50',
         className,
       )}
     >

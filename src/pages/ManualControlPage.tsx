@@ -207,7 +207,7 @@ export default function ManualControlPage() {
           </div>
 
           {/* Translucent keyboard + keyboard control card */}
-          <div className="flex gap-4 items-start">
+          <div className="flex gap-3 items-start">
             <div className="flex-1 min-w-0">
               <TranslucentKeyboard
                 pressedKeys={pressedKeys}
@@ -216,9 +216,9 @@ export default function ManualControlPage() {
             </div>
 
             {/* Keyboard Control card (inline with keyboard) */}
-            <div className="w-44 shrink-0 glass-panel p-3 space-y-3">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-artic-text">Keyboard Control</span>
+            <div className="w-48 shrink-0 glass-panel p-4 space-y-4">
+              <div className="flex items-center gap-2 border-b border-white/5 pb-3">
+                <span className="text-xs font-semibold text-artic-text uppercase tracking-wide">Keyboard Control</span>
               </div>
 
               {/* ON/OFF toggle */}
@@ -227,17 +227,17 @@ export default function ManualControlPage() {
                 aria-checked={state.keyboard.enabled}
                 onClick={() => dispatch({ type: 'TOGGLE_KEYBOARD', enabled: !state.keyboard.enabled })}
                 className={clsx(
-                  'w-full flex items-center justify-between px-3 py-2 rounded-lg border text-xs font-mono font-semibold transition-colors',
+                  'w-full flex items-center justify-between px-3 py-2.5 rounded-lg border text-xs font-mono font-semibold transition-all',
                   state.keyboard.enabled
-                    ? 'bg-green-600/20 border-green-500/40 text-green-400'
+                    ? 'bg-green-600/20 border-green-500/50 text-green-400 shadow-[0_0_8px_rgba(34,197,94,0.2)]'
                     : 'bg-navy-800/60 border-artic-border/60 text-artic-muted',
                 )}
               >
                 <span>Keyboard</span>
                 <span className={clsx(
-                  'px-2 py-0.5 rounded text-[10px] border',
+                  'px-2 py-0.5 rounded text-[10px] border font-bold',
                   state.keyboard.enabled
-                    ? 'bg-green-600/30 border-green-500/50 text-green-300'
+                    ? 'bg-green-600/40 border-green-500/60 text-green-300'
                     : 'bg-navy-700 border-artic-border text-artic-muted',
                 )}>
                   {state.keyboard.enabled ? 'ON' : 'OFF'}
@@ -246,12 +246,12 @@ export default function ManualControlPage() {
 
               {/* Pressed keys display */}
               <div>
-                <p className="text-[10px] text-artic-muted mb-1">Pressed Keys</p>
-                <div className="flex flex-wrap gap-1 min-h-[24px]">
+                <p className="text-[10px] text-artic-muted uppercase tracking-widest mb-2">Pressed Keys</p>
+                <div className="flex flex-wrap gap-1 min-h-[28px]">
                   {Array.from(pressedKeys).map((k) => (
                     <span
                       key={k}
-                      className="px-1.5 py-0.5 rounded border text-[10px] font-mono bg-blue-600/30 border-blue-400/50 text-blue-300"
+                      className="px-2 py-1 rounded border text-[10px] font-mono bg-blue-600/30 border-blue-400/60 text-blue-200 font-bold"
                     >
                       {k === ' ' ? 'Spc' : k === 'ArrowUp' ? '↑' : k === 'ArrowDown' ? '↓' : k === 'ArrowLeft' ? '←' : k === 'ArrowRight' ? '→' : k}
                     </span>
