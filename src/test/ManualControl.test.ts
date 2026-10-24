@@ -264,6 +264,19 @@ describe('applyKeyboardInputs', () => {
     expect(next.inputs.pitch).toBe(0)
     expect(next.inputs.yaw).toBe(0)
   })
+
+  it('Escape overrides other simultaneous keys — W+Escape zeros all inputs', () => {
+    const midState: ManualControlState = {
+      ...base,
+      inputs: { throttle: 0.7, roll: 0.5, pitch: -0.3, yaw: 0.8 },
+    }
+    // W would increase pitch, but Escape wins and zeros everything
+    const next = applyKeyboardInputs(midState, new Set(['W', 'Escape']), false, dt)
+    expect(next.inputs.throttle).toBe(0)
+    expect(next.inputs.roll).toBe(0)
+    expect(next.inputs.pitch).toBe(0)
+    expect(next.inputs.yaw).toBe(0)
+  })
 })
 
 // ── selectFlightMode ──────────────────────────────────────────────────────────

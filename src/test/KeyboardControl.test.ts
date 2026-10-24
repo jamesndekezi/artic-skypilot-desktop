@@ -130,15 +130,22 @@ describe('useKeyboardControl', () => {
 
   it('cleans up listeners on unmount (no errors after unmount)', () => {
     const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener')
-    const { unmount } = renderHook(() => useKeyboardControl(true))
+    const { result, unmount } = renderHook(() => useKeyboardControl(true))
 
     unmount()
 
     expect(removeEventListenerSpy).toHaveBeenCalled()
+
+    // Capture snapshot size immediately after unmount
+    const sizeAfterUnmount = result.current.pressedKeys.size
+
     // Firing events after unmount should not throw
     expect(() => {
       fireKeyDown('W')
       fireKeyUp('W')
     }).not.toThrow()
+
+    // The snapshot must remain unchanged (not updated) after post-unmount events
+    expect(result.current.pressedKeys.size).toBe(sizeAfterUnmount)
   })
 })

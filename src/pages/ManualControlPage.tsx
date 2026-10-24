@@ -101,7 +101,7 @@ export default function ManualControlPage() {
   useEffect(() => { precisionModeRef.current = precisionMode }, [precisionMode])
 
   // All-motors staging slider (local UI state)
-  const [allMotorsPwm, setAllMotorsPwm] = useState(MIN_PWM)
+  const [allMotorsStagingPwm, setAllMotorsStagingPwm] = useState(MIN_PWM)
 
   // Keyboard tick at 100 ms — only restarts when keyboard enabled state changes
   useEffect(() => {
@@ -211,15 +211,15 @@ export default function ManualControlPage() {
 
             <div className="flex items-center gap-2">
               <span className="text-xs font-mono text-artic-muted w-16">
-                {allMotorsPwm} µs
+                {allMotorsStagingPwm} µs
               </span>
               <input
                 type="range"
                 min={MIN_PWM}
                 max={MAX_PWM}
                 step={1}
-                value={allMotorsPwm}
-                onChange={(e) => setAllMotorsPwm(Number(e.target.value))}
+                value={allMotorsStagingPwm}
+                onChange={(e) => setAllMotorsStagingPwm(Number(e.target.value))}
                 className="flex-1 accent-cyan-400 cursor-pointer"
                 aria-label="All motors PWM staging value"
               />
@@ -228,7 +228,7 @@ export default function ManualControlPage() {
             <div className="flex gap-2">
               <button
                 onClick={() =>
-                  dispatch({ type: 'SET_ALL_MOTORS_PWM', pwmUs: allMotorsPwm })
+                  dispatch({ type: 'SET_ALL_MOTORS_PWM', pwmUs: allMotorsStagingPwm })
                 }
                 className="flex-1 py-2 text-xs font-semibold rounded border border-artic-accent/40 text-artic-accent bg-artic-accent/10 hover:bg-artic-accent/20 transition-colors"
               >
@@ -236,7 +236,7 @@ export default function ManualControlPage() {
               </button>
               <button
                 onClick={() => {
-                  setAllMotorsPwm(MIN_PWM)
+                  setAllMotorsStagingPwm(MIN_PWM)
                   dispatch({ type: 'SET_ALL_MOTORS_PWM', pwmUs: MIN_PWM })
                 }}
                 className="flex-1 py-2 text-xs font-semibold rounded border border-artic-border text-artic-muted hover:text-artic-text hover:bg-navy-800 transition-colors"
@@ -246,7 +246,7 @@ export default function ManualControlPage() {
             </div>
 
             <p className="text-[10px] text-artic-muted">
-              Staging value: {allMotorsPwm} µs — click Apply to send to all
+              Staging value: {allMotorsStagingPwm} µs — click Apply to send to all
               motors
             </p>
           </div>

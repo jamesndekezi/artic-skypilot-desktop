@@ -56,13 +56,14 @@ export function useKeyboardControl(enabled: boolean): KeyboardControlResult {
         }
       }
 
-      keysRef.current.add(event.key)
-      updateSnapshot()
-
-      // Escape also clears all other pressed keys
+      // Escape clears everything — never enters the ref
       if (event.key === 'Escape') {
         clearKeys()
+        return
       }
+
+      keysRef.current.add(event.key)
+      updateSnapshot()
     }
 
     const handleKeyUp = (event: KeyboardEvent) => {

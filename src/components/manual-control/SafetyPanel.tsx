@@ -16,6 +16,19 @@ interface Props {
 }
 
 export default function SafetyPanel({ safety, onStopAll }: Props) {
+  // Derive connection display properties from the actual connection state
+  const connectionClass =
+    safety.connection === 'connected' ? 'text-artic-success'
+    : safety.connection === 'connecting' ? 'text-artic-warning'
+    : safety.connection === 'error' ? 'text-artic-danger'
+    : 'text-artic-muted'
+
+  const connectionDot: 'danger' | 'success' | 'warning' | undefined =
+    safety.connection === 'connected' ? 'success'
+    : safety.connection === 'connecting' ? 'warning'
+    : safety.connection === 'error' ? 'danger'
+    : undefined
+
   return (
     <div className="card p-4 space-y-4 border-artic-danger/20">
       {/* Physical mode unavailable notice */}
@@ -58,8 +71,8 @@ export default function SafetyPanel({ safety, onStopAll }: Props) {
         <StatusRow
           label="Hardware Connection"
           value={safety.connection.toUpperCase()}
-          valueClass="text-artic-danger"
-          dot="danger"
+          valueClass={connectionClass}
+          dot={connectionDot}
         />
 
         <StatusRow
