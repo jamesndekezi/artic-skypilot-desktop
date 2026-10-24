@@ -75,4 +75,20 @@
   .status-dot {
     @apply inline-block w-2 h-2 rounded-full;
   }
+
+  /* Glass panel — translucent dark surface with subtle border */
+  .glass-panel {
+    @apply rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm;
+  }
+
+  /* Keyboard key — active (electric blue highlight) */
+  .key-active {
+    @apply bg-blue-600/80 border-blue-400 text-white;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.6), 0 0 16px rgba(59, 130, 246, 0.2);
+  }
+
+  /* Keyboard key — inactive */
+  .key-inactive {
+    @apply bg-navy-800/60 border-artic-border/60 text-artic-muted;
+  }
 }
