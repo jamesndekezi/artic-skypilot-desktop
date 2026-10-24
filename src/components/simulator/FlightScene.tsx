@@ -31,9 +31,10 @@ const WAYPOINTS: [number, number, number][] = [
 
 // Drone geometry: box body + 4 arms + 4 propeller discs
 function DroneModel({ heading }: { heading: number }) {
-  const group = useRef<THREE.Group>(null!);
+  const group = useRef<THREE.Group>(null);
   useEffect(() => {
-    if (group.current) {
+    // Guard: ref may be null in test environments where R3F is mocked
+    if (group.current && typeof group.current.rotation !== 'undefined') {
       group.current.rotation.y = (heading * Math.PI) / 180;
     }
   }, [heading]);
@@ -71,7 +72,7 @@ interface AircraftMeshProps {
 }
 
 function AircraftMesh({ telemetry, simState }: AircraftMeshProps) {
-  const group = useRef<THREE.Group>(null!);
+  const group = useRef<THREE.Group>(null);
   const targetPos = useRef(new THREE.Vector3());
 
   // Update target only when simulation is actively running
@@ -82,7 +83,7 @@ function AircraftMesh({ telemetry, simState }: AircraftMeshProps) {
   }, [telemetry, simState]);
 
   useFrame(() => {
-    if (!group.current) return;
+    if (!group.current || typeof group.current.position === 'undefined') return;
     group.current.position.lerp(targetPos.current, 0.05);
   });
 

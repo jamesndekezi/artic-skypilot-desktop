@@ -42,6 +42,49 @@ npm run tauri build
 
 ---
 
+## Stage 2: 3-D Flight Simulator
+
+The Flight Simulator page includes an interactive 3-D viewport powered by
+[Three.js](https://threejs.org/), [React Three Fiber](https://docs.pmnd.rs/react-three-fiber),
+and [Drei](https://github.com/pmndrs/drei).
+
+### Additional npm dependencies
+
+| Package | Version | Purpose |
+|---------|---------|---------|
+| `three` | 0.169.0 | 3-D rendering engine |
+| `@react-three/fiber` | 8.17.10 | React renderer for Three.js |
+| `@react-three/drei` | 9.114.3 | Three.js helpers (OrbitControls, Grid, Line, …) |
+| `@types/three` | 0.169.0 | TypeScript definitions for three |
+
+### Camera controls
+
+| Action | Input |
+|--------|-------|
+| Rotate | Left-click drag |
+| Pan | Right-click drag |
+| Zoom | Scroll wheel |
+| Reset camera | Refresh the page (camera reset button planned) |
+
+### Coordinate system
+
+The scene origin corresponds to Nairobi, Kenya (lat −1.2921, lng 36.8219).
+One scene unit ≈ 0.001 degree (roughly 111 m at the equator).
+Altitude is mapped directly to the Y axis (1 unit = 1 metre).
+
+### Limitations
+
+- All aircraft movement and telemetry are **simulation-only**; no real flight
+  data is used.
+- Terrain is a flat procedural grid — it is **illustrative only** and does not
+  represent real topography, approved routes, or official airspace.
+- No physics engine is implemented; aircraft positions interpolate linearly
+  between simulated telemetry ticks.
+- The viewport requires a browser with WebGL support. If WebGL is unavailable
+  the error boundary shows a fallback message.
+
+---
+
 ## Running tests
 
 ```bash
@@ -104,7 +147,7 @@ artic-skypilot-desktop/
 | Module | Status | Notes |
 |--------|--------|-------|
 | Overview | ✅ Working | Simulated telemetry, auto-refreshes every 2 s |
-| Flight Simulator | ⚠ Partial | Controls + readout work; 3-D viewport not built |
+| Flight Simulator | ✅ Working | Interactive 3-D viewport, simulated telemetry, Pause/Resume/Stop controls |
 | Mission Planner | 🔲 Planned | Interactive map, waypoint editor |
 | Flight Logs | 🔲 Planned | Persistent storage, replay, export |
 | Settings | ✅ Working | Read-only; persistence not yet wired |

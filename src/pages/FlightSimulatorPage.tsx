@@ -1,6 +1,8 @@
-import { useState } from "react";
-import { Plane, Play, Square, RotateCcw, AlertTriangle } from "lucide-react";
+import { useState, Suspense } from "react";
+import { Plane, Play, Pause, Square, RotateCcw, AlertTriangle } from "lucide-react";
 import { useFleetSimulation } from "@/hooks/useFleetSimulation";
+import FlightScene from "@/components/simulator/FlightScene";
+import SceneErrorBoundary from "@/components/simulator/SceneErrorBoundary";
 import clsx from "clsx";
 
 type SimState = "idle" | "running" | "paused";
@@ -8,9 +10,8 @@ type SimState = "idle" | "running" | "paused";
 /**
  * FlightSimulatorPage
  *
- * STATUS: Partial — basic simulated takeoff/land controls wired to
- * the fleet simulation hook. 3-D visualisation, waypoint path editing,
- * and physics engine are NOT YET IMPLEMENTED.
+ * STATUS: Functional — interactive 3-D viewport wired to simulated telemetry.
+ * Physics engine, waypoint path editor, replay, and export are NOT YET IMPLEMENTED.
  */
 export default function FlightSimulatorPage() {
   const fleet = useFleetSimulation();
@@ -24,6 +25,9 @@ export default function FlightSimulatorPage() {
   function handleStart() {
     setSimState("running");
   }
+  function handlePause() {
+    setSimState("paused");
+  }
   function handleStop() {
     setSimState("idle");
   }
@@ -32,7 +36,7 @@ export default function FlightSimulatorPage() {
   }
 
   return (
-    <div className="space-y-6 max-w-5xl">
+    <div className="space-y-6 max-w-6xl">
       {/* Header */}
       <div>
         <h2 className="text-lg font-semibold text-artic-text">
@@ -54,61 +58,75 @@ export default function FlightSimulatorPage() {
             Module partially implemented
           </p>
           <p className="text-artic-muted text-xs mt-0.5">
-            Telemetry display and basic sim controls are functional. The
-            following features are{" "}
-            <strong className="text-artic-text">not yet built</strong>: 3-D
-            viewport, physics engine, waypoint path editor, replay, and
-            export.
+            3-D viewport, telemetry display, and sim controls are functional.
+            The following features are{" "}
+            <strong className="text-artic-text">not yet built</strong>: physics
+            engine, waypoint path editor, replay, and export.
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Aircraft selector */}
-        <div className="card space-y-3">
-          <p className="text-xs font-semibold text-artic-muted uppercase tracking-widest">
-            Select Aircraft
-          </p>
-          <ul className="space-y-1" role="listbox" aria-label="Aircraft list">
-            {fleet.aircraft.map((a) => (
-              <li key={a.id}>
-                <button
-                  role="option"
-                  aria-selected={a.id === selectedId}
-                  onClick={() => setSelectedId(a.id)}
-                  className={clsx(
-                    "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-mono transition-colors",
-                    a.id === selectedId
-                      ? "bg-cyan-500/10 text-artic-accent border border-cyan-500/20"
-                      : "text-artic-muted hover:text-artic-text hover:bg-navy-800",
-                  )}
-                >
-                  <Plane className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                  {a.name}
-                  <span className="ml-auto text-[10px] uppercase opacity-60">
-                    {a.status}
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
+      <div className="flex flex-col lg:flex-row gap-4">
+        {/* Left column: aircraft selector + controls + readout */}
+        <div className="lg:w-72 shrink-0 space-y-4">
+          {/* Aircraft selector */}
+          <div className="card space-y-3">
+            <p className="text-xs font-semibold text-artic-muted uppercase tracking-widest">
+              Select Aircraft
+            </p>
+            <ul
+              className="space-y-1"
+              role="listbox"
+              aria-label="Aircraft list"
+            >
+              {fleet.aircraft.map((a) => (
+                <li key={a.id}>
+                  <button
+                    role="option"
+                    aria-selected={a.id === selectedId}
+                    onClick={() => setSelectedId(a.id)}
+                    className={clsx(
+                      "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-mono transition-colors",
+                      a.id === selectedId
+                        ? "bg-cyan-500/10 text-artic-accent border border-cyan-500/20"
+                        : "text-artic-muted hover:text-artic-text hover:bg-navy-800",
+                    )}
+                  >
+                    <Plane
+                      className="w-3.5 h-3.5 shrink-0"
+                      aria-hidden="true"
+                    />
+                    {a.name}
+                    <span className="ml-auto text-[10px] uppercase opacity-60">
+                      {a.status}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-        {/* Sim controls + readout */}
-        <div className="lg:col-span-2 space-y-4">
-          {/* Controls */}
+          {/* Sim controls */}
           <div className="card">
             <p className="text-xs font-semibold text-artic-muted uppercase tracking-widest mb-3">
               Simulation Controls
             </p>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 onClick={handleStart}
                 disabled={simState === "running"}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-artic-accent/10 text-artic-accent border border-artic-accent/30 text-sm font-medium hover:bg-artic-accent/20 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 <Play className="w-3.5 h-3.5" />
-                Start
+                {simState === "paused" ? "Resume" : "Start"}
+              </button>
+              <button
+                onClick={handlePause}
+                disabled={simState !== "running"}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-artic-warning/10 text-artic-warning border border-artic-warning/30 text-sm font-medium hover:bg-artic-warning/20 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                <Pause className="w-3.5 h-3.5" />
+                Pause
               </button>
               <button
                 onClick={handleStop}
@@ -133,7 +151,9 @@ export default function FlightSimulatorPage() {
                   "font-semibold",
                   simState === "running"
                     ? "text-artic-success"
-                    : "text-artic-muted",
+                    : simState === "paused"
+                      ? "text-artic-warning"
+                      : "text-artic-muted",
                 )}
               >
                 {simState.toUpperCase()}
@@ -147,7 +167,7 @@ export default function FlightSimulatorPage() {
               <p className="text-xs font-semibold text-artic-muted uppercase tracking-widest mb-3">
                 Live Readout — {selected.name}
               </p>
-              <dl className="grid grid-cols-3 gap-y-3 gap-x-4 font-mono text-sm">
+              <dl className="grid grid-cols-2 gap-y-3 gap-x-4 font-mono text-sm">
                 {[
                   ["Altitude", `${selected.altitudeM.toFixed(1)} m`],
                   ["Speed", `${selected.speedMs.toFixed(1)} m/s`],
@@ -166,19 +186,56 @@ export default function FlightSimulatorPage() {
               </dl>
             </div>
           )}
+        </div>
 
-          {/* 3-D viewport placeholder */}
-          <div className="card border-dashed border-artic-border flex flex-col items-center justify-center py-16 gap-3">
-            <Plane
-              className="w-10 h-10 text-artic-border"
-              aria-hidden="true"
-            />
-            <p className="text-artic-muted text-sm text-center">
-              3-D Viewport
-              <br />
-              <span className="text-xs opacity-60">Not yet implemented</span>
-            </p>
-          </div>
+        {/* Right: 3-D canvas */}
+        <div className="relative flex-1 min-h-[400px] rounded-xl overflow-hidden bg-[#050d1a]">
+          <SceneErrorBoundary>
+            <Suspense
+              fallback={
+                <div className="flex items-center justify-center h-full text-artic-muted text-sm">
+                  Loading 3-D scene…
+                </div>
+              }
+            >
+              {selected && (
+                <FlightScene telemetry={selected} simState={simState} />
+              )}
+            </Suspense>
+          </SceneErrorBoundary>
+
+          {/* HUD overlay */}
+          {selected && (
+            <div className="absolute top-3 right-3 bg-navy-800/80 backdrop-blur-sm border border-artic-border rounded-lg p-3 font-mono text-xs space-y-1 min-w-[140px]">
+              <p className="text-artic-muted uppercase tracking-widest text-[10px] mb-2">
+                {selected.name} HUD
+              </p>
+              <p className="text-artic-text">
+                ALT{" "}
+                <span className="text-artic-accent">
+                  {selected.altitudeM.toFixed(1)} m
+                </span>
+              </p>
+              <p className="text-artic-text">
+                SPD{" "}
+                <span className="text-artic-accent">
+                  {selected.speedMs.toFixed(1)} m/s
+                </span>
+              </p>
+              <p className="text-artic-text">
+                HDG{" "}
+                <span className="text-artic-accent">
+                  {selected.headingDeg.toFixed(0)}°
+                </span>
+              </p>
+              <p className="text-artic-text">
+                BAT{" "}
+                <span className="text-artic-accent">
+                  {selected.batteryPct.toFixed(0)}%
+                </span>
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
