@@ -279,7 +279,8 @@ describe('ManualControlPage (Stage 4 dashboard)', () => {
   it('shows the keyboard shortcuts reference', () => {
     renderPage()
     expect(screen.getByText('Keyboard Shortcuts')).toBeInTheDocument()
-    expect(screen.getByText(/Pitch forward \/ backward/i)).toBeInTheDocument()
+    // Verify a shortcut entry from the right-column reference table
+    expect(screen.getByText('W / S')).toBeInTheDocument()
   })
 
   it('renders the R3F canvas mock', () => {

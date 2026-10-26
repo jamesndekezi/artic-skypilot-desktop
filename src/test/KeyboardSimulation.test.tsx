@@ -90,6 +90,9 @@ describe('ThrottleGauge', () => {
 
 // ── SimulatorViewport pause overlay ──────────────────────────────────────────
 
+// Minimal ControlInputs stub
+const MOCK_INPUTS = { throttle: 0, roll: 0, pitch: 0, yaw: 0 }
+
 describe('SimulatorViewport pause overlay', () => {
   it('does not show PAUSED when paused=false', () => {
     render(
@@ -97,6 +100,9 @@ describe('SimulatorViewport pause overlay', () => {
         telemetry={MOCK_TELEMETRY}
         simState="running"
         paused={false}
+        inputs={MOCK_INPUTS}
+        flightMode="stabilize"
+        onSelectFlightMode={() => {}}
       />
     )
     expect(screen.queryByText(/PAUSED/i)).not.toBeInTheDocument()
@@ -108,6 +114,9 @@ describe('SimulatorViewport pause overlay', () => {
         telemetry={MOCK_TELEMETRY}
         simState="paused"
         paused={true}
+        inputs={MOCK_INPUTS}
+        flightMode="stabilize"
+        onSelectFlightMode={() => {}}
       />
     )
     expect(screen.getByText(/PAUSED/i)).toBeInTheDocument()
@@ -119,6 +128,9 @@ describe('SimulatorViewport pause overlay', () => {
         telemetry={MOCK_TELEMETRY}
         simState="paused"
         paused={true}
+        inputs={MOCK_INPUTS}
+        flightMode="stabilize"
+        onSelectFlightMode={() => {}}
       />
     )
     expect(screen.getByText(/PAUSED/i)).toBeInTheDocument()
