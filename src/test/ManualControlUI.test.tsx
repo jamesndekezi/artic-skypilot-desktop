@@ -254,7 +254,7 @@ function renderPage() {
 describe('ManualControlPage (Stage 4 dashboard)', () => {
   it('renders without crashing', () => {
     renderPage()
-    expect(screen.getByText('Manual Control')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /Manual Control/i })).toBeInTheDocument()
   })
 
   it('shows SIMULATION badge', () => {
