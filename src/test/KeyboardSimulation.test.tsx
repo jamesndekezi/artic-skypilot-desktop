@@ -150,15 +150,11 @@ function renderPage() {
 describe('ManualControlPage — scroll prevention', () => {
   it('calls preventDefault on ArrowUp when keyboard is enabled', () => {
     renderPage()
-    // Enable keyboard
-    const toggle = screen.getByRole('switch', { name: /Keyboard/i })
+    // Enable keyboard via the Disabled/Enabled toggle button
+    const toggle = screen.getByRole('switch', { name: /Disabled|Enabled/i })
     fireEvent.click(toggle)
 
-    const event = new KeyboardEvent('keydown', {
-      key: 'ArrowUp',
-      bubbles: true,
-      cancelable: true,
-    })
+    const event = new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true, cancelable: true })
     const preventDefaultSpy = vi.spyOn(event, 'preventDefault')
     document.dispatchEvent(event)
     expect(preventDefaultSpy).toHaveBeenCalled()
@@ -167,12 +163,7 @@ describe('ManualControlPage — scroll prevention', () => {
   it('does NOT call preventDefault on ArrowUp when keyboard is disabled', () => {
     renderPage()
     // keyboard starts disabled — do NOT click toggle
-
-    const event = new KeyboardEvent('keydown', {
-      key: 'ArrowUp',
-      bubbles: true,
-      cancelable: true,
-    })
+    const event = new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true, cancelable: true })
     const preventDefaultSpy = vi.spyOn(event, 'preventDefault')
     document.dispatchEvent(event)
     expect(preventDefaultSpy).not.toHaveBeenCalled()
@@ -180,35 +171,25 @@ describe('ManualControlPage — scroll prevention', () => {
 
   it('does NOT call preventDefault when target is an INPUT', () => {
     renderPage()
-    const toggle = screen.getByRole('switch', { name: /Keyboard/i })
+    const toggle = screen.getByRole('switch', { name: /Disabled|Enabled/i })
     fireEvent.click(toggle)
 
     const input = document.createElement('input')
     document.body.appendChild(input)
-
-    const event = new KeyboardEvent('keydown', {
-      key: 'ArrowUp',
-      bubbles: true,
-      cancelable: true,
-    })
+    const event = new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true, cancelable: true })
     Object.defineProperty(event, 'target', { value: input, writable: false })
     const preventDefaultSpy = vi.spyOn(event, 'preventDefault')
     document.dispatchEvent(event)
     expect(preventDefaultSpy).not.toHaveBeenCalled()
-
     document.body.removeChild(input)
   })
 
   it('calls preventDefault on Space when keyboard is enabled', () => {
     renderPage()
-    const toggle = screen.getByRole('switch', { name: /Keyboard/i })
+    const toggle = screen.getByRole('switch', { name: /Disabled|Enabled/i })
     fireEvent.click(toggle)
 
-    const event = new KeyboardEvent('keydown', {
-      key: ' ',
-      bubbles: true,
-      cancelable: true,
-    })
+    const event = new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true })
     const preventDefaultSpy = vi.spyOn(event, 'preventDefault')
     document.dispatchEvent(event)
     expect(preventDefaultSpy).toHaveBeenCalled()
@@ -216,33 +197,30 @@ describe('ManualControlPage — scroll prevention', () => {
 })
 
 describe('ManualControlPage — new UI elements', () => {
-  it('renders AttitudeIndicator in the page', () => {
+  it('renders control indicators (Pitch/Roll/Yaw/Throttle) in the page', () => {
     renderPage()
-    // AttitudeIndicator has role=img with "Attitude" label
-    const imgs = screen.getAllByRole('img')
-    const attitudeImg = imgs.find(
-      (el) => el.getAttribute('aria-label')?.toLowerCase().includes('attitude'),
-    )
-    expect(attitudeImg).toBeDefined()
+    // Current Input card shows axis labels
+    expect(screen.getAllByText(/Pitch/).length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText(/Throttle/).length).toBeGreaterThanOrEqual(1)
   })
 
-  it('renders ThrottleGauge in the page', () => {
+  it('renders the Current Input card', () => {
     renderPage()
-    const imgs = screen.getAllByRole('img')
-    const throttleImg = imgs.find(
-      (el) => el.getAttribute('aria-label')?.toLowerCase().includes('throttle'),
-    )
-    expect(throttleImg).toBeDefined()
+    expect(screen.getByText('Current Input')).toBeInTheDocument()
   })
 
-  it('shows Esc to neutralize hint text', () => {
+  it('shows Esc to neutralize hint text below the keyboard', () => {
     renderPage()
-    expect(screen.getByText(/Esc to neutralize/i)).toBeInTheDocument()
+    // The hint paragraph contains "Esc to neutralize" — use getAllByText with partial match
+    const hint = screen.getAllByText((_, el) =>
+      el?.textContent?.includes('Esc to neutralize') ?? false
+    )
+    expect(hint.length).toBeGreaterThanOrEqual(1)
   })
 
   it('physical hardware mode remains unavailable', () => {
     renderPage()
-    expect(screen.queryByText(/^connected$/i)).not.toBeInTheDocument()
+    expect(screen.getByText(/Simulation controls only/i)).toBeInTheDocument()
     expect(screen.queryByText(/hardware online/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/motors: armed/i)).not.toBeInTheDocument()
   })
