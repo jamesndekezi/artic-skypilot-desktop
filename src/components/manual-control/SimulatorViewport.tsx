@@ -8,6 +8,7 @@ import SceneErrorBoundary from '@/components/simulator/SceneErrorBoundary'
 interface SimulatorViewportProps {
   telemetry: AircraftTelemetry
   simState: 'idle' | 'running' | 'paused'
+  paused?: boolean
 }
 
 function BatteryIcon({ pct }: { pct: number }) {
@@ -25,14 +26,6 @@ function batteryColor(pct: number) {
 // ── Compass ruler ─────────────────────────────────────────────────────────────
 function CompassRuler({ headingDeg }: { headingDeg: number }) {
   const heading = ((headingDeg % 360) + 360) % 360
-  // Cardinals at 0°, 90°, 180°, 270° — render as a fixed strip
-  const cardinals = [
-    { label: 'W', deg: 270 },
-    { label: 'N', deg: 0   },
-    { label: 'N', deg: 360 },
-    { label: 'E', deg: 90  },
-    { label: 'S', deg: 180 },
-  ]
   return (
     <div
       className="flex-1 mx-6 relative h-7"
@@ -115,7 +108,7 @@ function CompassRose({ headingDeg }: { headingDeg: number }) {
  * HUD elements (telemetry cards, compass, compass rose) are overlaid
  * on top of the canvas — matching the reference GCS image.
  */
-export default function SimulatorViewport({ telemetry, simState }: SimulatorViewportProps) {
+export default function SimulatorViewport({ telemetry, simState, paused = false }: SimulatorViewportProps) {
   return (
     <div
       className="relative rounded-xl overflow-hidden border border-white/10"
@@ -181,6 +174,15 @@ export default function SimulatorViewport({ telemetry, simState }: SimulatorView
         className="absolute bottom-0 inset-x-0 h-16 pointer-events-none"
         style={{ background: 'linear-gradient(to top, rgba(5,13,26,0.6) 0%, transparent 100%)' }}
       />
+
+      {/* ── Paused overlay ── */}
+      {paused && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/40 pointer-events-none">
+          <span className="text-white text-2xl font-bold font-mono tracking-widest select-none drop-shadow-lg">
+            ⏸ PAUSED
+          </span>
+        </div>
+      )}
     </div>
   )
 }

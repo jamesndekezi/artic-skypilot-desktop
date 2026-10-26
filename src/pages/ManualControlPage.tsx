@@ -31,6 +31,8 @@ import ControlIndicators    from '@/components/manual-control/ControlIndicators'
 import FlightModeCard       from '@/components/manual-control/FlightModeCard'
 import TranslucentKeyboard  from '@/components/manual-control/TranslucentKeyboard'
 import KeyboardStatusPanel  from '@/components/manual-control/KeyboardStatusPanel'
+import AttitudeIndicator    from '@/components/manual-control/AttitudeIndicator'
+import ThrottleGauge        from '@/components/manual-control/ThrottleGauge'
 
 // Existing safety panel (keep STOP ALL button)
 import SafetyPanel from '@/components/manual-control/SafetyPanel'
@@ -131,6 +133,24 @@ export default function ManualControlPage() {
     return () => clearInterval(interval)
   }, [state.keyboard.enabled, state.keyboard.paused])
 
+  // Scroll prevention — block browser scroll on arrow keys and Space while keyboard is active
+  useEffect(() => {
+    const SCROLL_KEYS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '])
+    const preventScroll = (e: KeyboardEvent) => {
+      if (!SCROLL_KEYS.has(e.key)) return
+      const target = e.target as HTMLElement | null
+      if (target) {
+        const tag = target.tagName
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable) return
+      }
+      if (state.keyboard.enabled) {
+        e.preventDefault()
+      }
+    }
+    document.addEventListener('keydown', preventScroll)
+    return () => document.removeEventListener('keydown', preventScroll)
+  }, [state.keyboard.enabled])
+
   // Flight mode keys 1/2/3 — always registered (regardless of keyboard toggle)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -195,7 +215,7 @@ export default function ManualControlPage() {
         <div className="flex-1 min-w-0 flex flex-col gap-4">
 
           {/* 3-D simulator viewport with telemetry HUD + compass */}
-          <SimulatorViewport telemetry={telemetry} simState={simState} />
+          <SimulatorViewport telemetry={telemetry} simState={simState} paused={simState === 'paused'} />
 
           {/* Flight mode + control indicators — side by side */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -206,6 +226,13 @@ export default function ManualControlPage() {
             <ControlIndicators inputs={state.inputs} />
           </div>
 
+          {/* Attitude indicator + throttle gauge row */}
+          <div className="flex items-center gap-4 px-2">
+            <AttitudeIndicator pitch={state.inputs.pitch} roll={state.inputs.roll} className="shrink-0" />
+            <div className="flex-1" />
+            <ThrottleGauge throttle={state.inputs.throttle} className="shrink-0" />
+          </div>
+
           {/* Translucent keyboard + keyboard control card */}
           <div className="flex gap-3 items-start">
             <div className="flex-1 min-w-0">
@@ -213,6 +240,9 @@ export default function ManualControlPage() {
                 pressedKeys={pressedKeys}
                 enabled={state.keyboard.enabled}
               />
+              <p className="mt-2 text-[10px] text-artic-muted/70 text-center font-mono">
+                Press Esc to neutralize all inputs · Space to pause
+              </p>
             </div>
 
             {/* Keyboard Control card (inline with keyboard) */}
