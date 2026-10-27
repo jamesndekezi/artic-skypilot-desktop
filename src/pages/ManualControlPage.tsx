@@ -119,30 +119,17 @@ function ToggleSwitch({ checked, onChange, disabled }: {
   )
 }
 
-// ── Compact motor card (matches reference: large PWM value, STOP btn, slider) ─
+// ── Compact motor card — matches reference exactly ────────────────────────────
 function CompactMotorCard({ motor, onCommandChange }: {
   motor: MotorState
   onCommandChange: (id: MotorId, pwmUs: number) => void
 }) {
-  const [inputVal, setInputVal] = useState(String(motor.commandedPwmUs))
   const rangePercent = ((motor.commandedPwmUs - MIN_PWM) / (MAX_PWM - MIN_PWM)) * 100
 
-  // Sync when value changes externally (e.g. STOP ALL)
-  useEffect(() => { setInputVal(String(motor.commandedPwmUs)) }, [motor.commandedPwmUs])
-
-  const handleSlider = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const v = Number(e.target.value)
-    setInputVal(String(v))
-    onCommandChange(motor.id, v)
-  }
-
   return (
-    <div
-      className="rounded-xl border border-artic-border bg-artic-surface p-3 flex flex-col gap-2"
-      aria-label={`Motor ${motor.id} control card`}
-    >
-      {/* Header row */}
-      <div className="flex items-center justify-between">
+    <div className="rounded-xl border border-artic-border bg-artic-surface px-3 py-2 flex flex-col gap-1 min-h-0">
+      {/* Header */}
+      <div className="flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
           <span className="font-mono font-bold text-artic-accent text-sm">{motor.id}</span>
           <span className="text-[10px] text-artic-muted bg-navy-800 px-1.5 py-0.5 rounded border border-artic-border">
@@ -152,45 +139,41 @@ function CompactMotorCard({ motor, onCommandChange }: {
         <button
           onClick={() => onCommandChange(motor.id, MIN_PWM)}
           className="flex items-center gap-1 text-[10px] text-artic-muted hover:text-artic-danger transition-colors font-mono"
-          aria-label={`Stop motor ${motor.id}`}
         >
           <span className="w-1.5 h-1.5 rounded-full bg-artic-muted" />
           STOP
         </button>
       </div>
 
-      {/* Large PWM value */}
-      <div className="text-center leading-none">
-        <span className="font-mono font-bold text-artic-text" style={{ fontSize: '1.75rem' }}>
-          {motor.commandedPwmUs}
-        </span>
+      {/* PWM value — large */}
+      <div className="text-center leading-none shrink-0">
+        <span className="font-mono font-bold text-artic-text text-3xl">{motor.commandedPwmUs}</span>
         <span className="text-artic-muted text-sm ml-1">µs</span>
       </div>
 
-      <p className="text-[10px] text-artic-muted text-center leading-tight">
+      <p className="text-[9px] text-artic-muted text-center leading-tight shrink-0">
         Commanded ESC pulse (µs) — simulation only
       </p>
 
-      {/* Progress bar */}
-      <div className="h-1 rounded-full bg-navy-800 overflow-hidden">
-        <div
-          className={clsx('h-full rounded-full transition-all duration-100',
-            motor.simActive ? 'bg-artic-accent' : 'bg-artic-muted/40'
-          )}
-          style={{ width: `${rangePercent}%` }}
+      {/* Progress + slider combined */}
+      <div className="flex flex-col gap-0.5 mt-auto shrink-0">
+        <div className="h-1 rounded-full bg-navy-800 overflow-hidden">
+          <div
+            className={clsx('h-full rounded-full transition-all duration-100',
+              motor.simActive ? 'bg-artic-accent' : 'bg-artic-muted/40'
+            )}
+            style={{ width: `${rangePercent}%` }}
+          />
+        </div>
+        <input
+          type="range" min={MIN_PWM} max={MAX_PWM} step={1}
+          value={motor.commandedPwmUs}
+          onChange={e => {
+            onCommandChange(motor.id, Number(e.target.value))
+          }}
+          className="w-full accent-cyan-400 cursor-pointer h-1"
+          aria-label={`${motor.id} PWM slider`}
         />
-      </div>
-
-      {/* Slider */}
-      <input
-        type="range" min={MIN_PWM} max={MAX_PWM} step={1}
-        value={motor.commandedPwmUs}
-        onChange={handleSlider}
-        className="w-full accent-cyan-400 cursor-pointer h-1"
-        aria-label={`${motor.id} PWM slider`}
-      />
-      <div className="flex justify-between text-[9px] text-artic-muted font-mono -mt-1">
-        <span>{MIN_PWM}</span><span>{MAX_PWM}</span>
       </div>
     </div>
   )
@@ -401,8 +384,8 @@ export default function ManualControlPage() {
           </div>
         </div>
 
-        {/* RIGHT: safety panel — fixed width, full height */}
-        <div className="w-72 shrink-0 overflow-y-auto">
+        {/* RIGHT: safety panel — fixed width, full height, no inner scroll */}
+        <div className="w-72 shrink-0 min-h-0 overflow-hidden">
           <SafetyPanel
             safety={state.safety}
             onStopAll={() => dispatch({ type: 'STOP_ALL' })}
